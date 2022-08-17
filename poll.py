@@ -4,6 +4,9 @@ import glob
 import random
 import string
 
+import numpy as np
+import pandas as pd
+
 import streamlit as st
 import utils
 
@@ -45,6 +48,25 @@ if percent_complete > 100:
 progress_bar.progress(percent_complete)
 
 
+def show_global_success_rate():
+    """show global success rate"""
+    # show results
+
+    poll_results = glob.glob("poll_results_*.csv")
+    total_scores = np.array(pd.read_csv(poll_results[0], delimiter="|")["num_correct"])
+
+    for result in poll_results[1:]:
+        this_scores = np.array(pd.read_csv(result, delimiter="|")["num_correct"])
+        total_scores += this_scores
+
+    total_scores = total_scores.astype(float)
+
+    total_scores /= len(poll_results)
+
+    st.write("# Everyone's success rates")
+    st.bar_chart(total_scores)
+
+
 def common_callback(idx):
     """callback when user presses a button"""
     row = st.session_state.row
@@ -83,10 +105,11 @@ if row < len(questions):
 
 else:
 
+    st.button("Show global success rates", on_click=show_global_success_rate)
+
     # save results to disk
     utils.save_df(questions, st.session_state.user_name + ".csv")
 
-    # show results
     num_correct = questions["num_correct"].sum()
     st.info(
         f"""# Results
@@ -100,7 +123,7 @@ else:
         if row["num_correct"] == 1:
             st.success(
                 f"""
-### {row['Prompt']}
+### Q{idx}.  {row['Prompt']}
 ### {row['Correct']}
 ###
 
@@ -111,7 +134,7 @@ else:
         else:
             st.error(
                 f"""
-### {row['Prompt']}
+### Q{idx}. {row['Prompt']}
 ### {row['Correct']}
 ###
 
@@ -119,6 +142,3 @@ else:
 
 """
             )
-
-    poll_results = glob.glob("poll_results_*.csv")
-    st.write(poll_results)

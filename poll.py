@@ -27,13 +27,15 @@ if "questions" not in st.session_state:
 
     qdata = st.experimental_get_query_params()
     url = qdata["poll_loc"][0]
+    name = qdata["poll_name"][0]
 
-    file_name = utils.download_if_needed(url, "remote_poll.csv")
+    file_name = utils.download_if_needed(url, name + ".csv")
 
     questions = utils.read_df(file_name)
 
     questions["num_correct"] = ["" for _ in range(len(questions))]
     st.session_state.questions = questions
+    st.session_state.poll_name = name
 
 if "row" not in st.session_state:
     st.session_state.row = 0
@@ -108,7 +110,10 @@ else:
     st.button("Show global success rates", on_click=show_global_success_rate)
 
     # save results to disk
-    utils.save_df(questions, st.session_state.user_name + ".csv")
+    utils.save_df(
+        questions,
+        st.session_state.poll_name + "_" + st.session_state.user_name + ".csv",
+    )
 
     num_correct = questions["num_correct"].sum()
     st.info(

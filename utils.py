@@ -1,3 +1,5 @@
+"""utility functions to support the poll.py app"""
+
 import os
 import urllib
 from pathlib import Path

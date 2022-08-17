@@ -1,3 +1,6 @@
+"""poll app """
+
+import glob
 import random
 import string
 
@@ -114,3 +117,6 @@ else:
 
 """
             )
+
+    poll_results = glob.glob("poll_results_*.csv")
+    st.write(poll_results)

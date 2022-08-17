@@ -54,7 +54,7 @@ def show_global_success_rate():
     """show global success rate"""
     # show results
 
-    poll_results = glob.glob("poll_results_*.csv")
+    poll_results = glob.glob(st.session_state.poll_name + "_poll_results_*.csv")
     total_scores = np.array(pd.read_csv(poll_results[0], delimiter="|")["num_correct"])
 
     for result in poll_results[1:]:
@@ -129,7 +129,7 @@ else:
             st.success(
                 f"""
 ### Q{idx}.  {row['Prompt']}
-### {row['Correct']}
+### A: {row['Correct']}
 ###
 
 {row['Explanation']}
@@ -140,7 +140,7 @@ else:
             st.error(
                 f"""
 ### Q{idx}. {row['Prompt']}
-### {row['Correct']}
+### A: {row['Correct']}
 ###
 
 {row['Explanation']}

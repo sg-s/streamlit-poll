@@ -40,6 +40,8 @@ questions = st.session_state.questions
 row = st.session_state.row
 
 percent_complete = int(100 * (row / len(questions)))
+if percent_complete > 100:
+    percent_complete = 100
 progress_bar.progress(percent_complete)
 
 

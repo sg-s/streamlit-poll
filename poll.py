@@ -1,15 +1,30 @@
 import random
+import string
 
 import streamlit as st
-from utils import read_df
+import utils
 
 st.set_page_config(page_title="streamlit-poll", layout="wide")
 
 
 progress_bar = st.progress(0)
 
+
+if "user_name" not in st.session_state:
+
+    letters = string.ascii_lowercase
+    st.session_state.user_name = "poll_results_" + "".join(
+        random.choice(letters) for i in range(10)
+    )
+
 if "questions" not in st.session_state:
-    questions = read_df("poll.csv")
+
+    qdata = st.experimental_get_query_params()
+    url = qdata["poll_loc"][0]
+
+    file_name = utils.download_if_needed(url, "remote_poll.csv")
+
+    questions = utils.read_df(file_name)
 
     questions["num_correct"] = ["" for _ in range(len(questions))]
     st.session_state.questions = questions
@@ -26,14 +41,12 @@ progress_bar.progress(percent_complete)
 
 
 def common_callback(idx):
-
+    """callback when user presses a button"""
     row = st.session_state.row
 
     if choices.index(correct_choice) == idx:
-        st.success("# Correct!")
         questions["num_correct"][row] = 1
     else:
-        st.error("# Wrong!")
         questions["num_correct"][row] = 0
 
     st.session_state.row += 1
@@ -64,6 +77,10 @@ if row < len(questions):
         st.button(choices[1], on_click=common_callback, args=(1,))
 
 else:
+
+    # save results to disk
+    utils.save_df(questions, st.session_state.user_name + ".csv")
+
     # show results
     num_correct = questions["num_correct"].sum()
     st.info(

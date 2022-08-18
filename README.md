@@ -6,4 +6,4 @@ The best part is that you don't have to download or install anything -- it works
 
 ## Demo
 
-[Click here for what this looks like](https://sg-s-streamlit-poll-poll-38kft7.streamlitapp.com/?poll_loc=&poll_name=demo)
+[Click here for what this looks like](https://sg-s-streamlit-poll-poll-38kft7.streamlitapp.com/?poll_loc=https://raw.githubusercontent.com/sg-s/streamlit-poll/main/sample.poll&poll_name=demo)

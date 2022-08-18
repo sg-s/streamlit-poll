@@ -1,0 +1,5 @@
+Prompt|Correct|Wrong|Explanation
+What is the capital of France|Paris|London, Moscow| look at a map
+What is this app written using?| streamlit| Julia, Bokeh, MATLAB | It's streamlit that makes this possible
+What was the name of the biggest Allied amphibious invasion of Europe?|Operation Husky| Operation Overlord| It's Husky, the invasion of Sicily, which was bigger than Overlord, the invasion of France
+Which one of these was not a key strategic objective in the Battle of Stalingrad? | The Tula Arms Factory | Red October, Barricades, The Chemical Plant, The Tractor Factory | The Tula Arms Factory is in Tula, not Stalingrad

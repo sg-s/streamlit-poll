@@ -16,6 +16,11 @@ st.set_page_config(page_title="streamlit-poll", layout="wide")
 progress_bar = st.progress(0)
 
 
+qdata = st.experimental_get_query_params()
+
+if "show_results" not in qdata.keys():
+    qdata["show_results"] = False
+
 if "user_name" not in st.session_state:
 
     letters = string.ascii_lowercase
@@ -25,7 +30,6 @@ if "user_name" not in st.session_state:
 
 if "questions" not in st.session_state:
 
-    qdata = st.experimental_get_query_params()
     url = qdata["poll_loc"][0]
     name = qdata["poll_name"][0]
 
@@ -44,29 +48,48 @@ if "row" not in st.session_state:
 questions = st.session_state.questions
 row = st.session_state.row
 
-percent_complete = int(100 * (row / len(questions)))
-if percent_complete > 100:
-    percent_complete = 100
-progress_bar.progress(percent_complete)
 
-
-def show_global_success_rate():
-    """show global success rate"""
-    # show results
-
+if qdata["show_results"][0] == "True":
     poll_results = glob.glob(st.session_state.poll_name + "_poll_results_*.csv")
-    total_scores = np.array(pd.read_csv(poll_results[0], delimiter="|")["num_correct"])
 
+    if len(poll_results) < 3:
+        st.warning("# Not enough data to show results")
+        st.stop()
+
+    total_scores = np.array(
+        pd.read_csv(poll_results[0], delimiter="|")["num_correct"]
+    ).astype(float)
+
+    nrows = 1
     for result in poll_results[1:]:
-        this_scores = np.array(pd.read_csv(result, delimiter="|")["num_correct"])
+        this_scores = np.array(
+            pd.read_csv(result, delimiter="|")["num_correct"]
+        ).astype(float)
+
+        if np.any(np.isnan(this_scores)):
+            continue
+
+        nrows += 1
         total_scores += this_scores
 
     total_scores = total_scores.astype(float)
 
-    total_scores /= len(poll_results)
+    total_scores /= nrows
+
+    questions["Percent correct"] = (total_scores * 100).astype(int)
+
+    questions.drop(
+        columns=["Explanation", "Correct", "num_correct", "Wrong"], inplace=True
+    )
 
     st.write("# Everyone's success rates")
-    st.bar_chart(total_scores)
+    st.write(questions)
+    st.stop()
+
+percent_complete = int(100 * (row / len(questions)))
+if percent_complete > 100:
+    percent_complete = 100
+progress_bar.progress(percent_complete)
 
 
 def common_callback(idx):
@@ -86,7 +109,8 @@ if row < len(questions):
     correct_choice = str(questions["Correct"].iloc[row])
     wrong_choice = str(questions["Wrong"].iloc[row])
 
-    choices = [correct_choice, wrong_choice]
+    choices = correct_choice + "," + wrong_choice
+    choices = choices.split(",")
     choices.sort()
 
     st.write("#")
@@ -97,17 +121,11 @@ if row < len(questions):
     st.write("#")
     st.write("#")
 
-    col1, col2 = st.columns(2)
+    for idx, choice in enumerate(choices):
+        st.button(choice, on_click=common_callback, args=(idx,))
 
-    with col1:
-        st.button(choices[0], on_click=common_callback, args=(0,))
-
-    with col2:
-        st.button(choices[1], on_click=common_callback, args=(1,))
 
 else:
-
-    st.button("Show global success rates", on_click=show_global_success_rate)
 
     # save results to disk
     utils.save_df(

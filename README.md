@@ -31,3 +31,16 @@ https://sg-s-streamlit-poll-poll-38kft7.streamlitapp.com/?poll_loc=https://raw.g
 ```
 
 or [click here](https://sg-s-streamlit-poll-poll-38kft7.streamlitapp.com/?poll_loc=https://raw.githubusercontent.com/sg-s/streamlit-poll/main/sample.poll&poll_name=demo&show_results=True)
+
+## Features
+
+- zero-code use
+- support for arbitrarily many choices
+- support for different numbers of choices for each question
+- support for as many questions as you'd like
+- ability to view results of poll
+
+
+## License
+
+GPL v3

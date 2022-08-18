@@ -19,7 +19,7 @@ progress_bar = st.progress(0)
 qdata = st.experimental_get_query_params()
 
 if "show_results" not in qdata.keys():
-    qdata["show_results"] = False
+    qdata["show_results"] = ["False"]
 
 if "user_name" not in st.session_state:
 
